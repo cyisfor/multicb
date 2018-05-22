@@ -10,11 +10,12 @@ require('interleavings').test(function (isAsync) {
 
   var mcb = multicb({
 		pluck: 1,
-		done: function(results) {
+		spread: 1,
+		done: function(first, second, third) {
 			console.log('done')
-			t.equal(results[0], 1)
-			t.equal(results[1], 2)
-			t.equal(results[2], 3)
+			t.equal(first, 1)
+			t.equal(second, 2)
+			t.equal(third, 3)
 			isAsync.done()
 		},
 		error: function(err) {

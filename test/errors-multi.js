@@ -19,4 +19,4 @@ mcb.commit()
 
 cbs[0]('fail')
 cbs[1]('fail')
-t.equal(called, 2)
+t.equal(called, 1)
