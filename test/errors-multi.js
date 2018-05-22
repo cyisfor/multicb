@@ -2,13 +2,21 @@
 var multicb = require('../')
 var t = require('assert')
 
-var done = multicb()
-var cbs = [done(), done()]
 var called = 0
-done(function(err, results) {
-  called++
-  t.equal(results, void 0)
+
+var mcb = multicb({
+	done: function(results) {
+		t.fail("No failed callback should ever be done.")
+	},
+	error: function(err) {
+		t.equal(err, 'fail')
+		++called;
+	}
 })
+var cbs = [mcb(), mcb()]
+
+mcb.commit()
+
 cbs[0]('fail')
 cbs[1]('fail')
-t.equal(called, 1)
+t.equal(called, 2)

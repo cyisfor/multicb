@@ -42,7 +42,6 @@ doAsync(mcb())
 doAsync(mcb())
 doAsync(mcb())
 mcb.commit()
-delete mcb
 
 // spread argument
 
