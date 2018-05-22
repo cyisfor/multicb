@@ -1,6 +1,16 @@
 module.exports = function(o) {
   var n = 0, m = 0, results = [], _err;
 	var ready = false;
+	/* for convenience of packaging up error and done... */
+	if(o.cb) {
+		o.done = o.cb.done
+		o.error = o.cb.error;
+		delete o.cb;
+	} else if(o.done.error) {
+		o.error = o.done.error;
+		if(o.done.done)
+			o.done = o.done.done;
+	}
 	
 	function maybe_done() {
 		if(!ready) return;
