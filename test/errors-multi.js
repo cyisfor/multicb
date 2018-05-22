@@ -4,15 +4,15 @@ var t = require('assert')
 
 var called = 0
 
-var mcb = multicb({
-	done: function(results) {
-		t.fail("No failed callback should ever be done.")
-	},
-	error: function(err) {
+var mcb = multicb(function(err, results) {
+	if(err) {
 		t.equal(err, 'fail')
 		++called;
+	} else {
+		t.fail("No failed callback should ever be done.")
 	}
 })
+
 var cbs = [mcb(), mcb()]
 
 mcb.commit()

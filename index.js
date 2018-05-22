@@ -1,24 +1,22 @@
-module.exports = function(o) {
+module.exports = function(o,cb) {
   var n = 0, m = 0, results = [], _err;
 	var ready = false;
-	/* for convenience of packaging up error and done... */
-	if(o.cb) {
-		o.done = o.cb.done
-		o.error = o.cb.error;
-		delete o.cb;
-	} else if(o.done.error) {
-		o.error = o.done.error;
-		if(o.done.done)
-			o.done = o.done.done;
+	/* the callback(err, arg...) convention is enforced by most modules. */
+
+	if(!cb) {
+		cb = o;
+		o = {};
 	}
 	
 	function maybe_done() {
 		if(!ready) return;
 		if(n !== m) return;
-    if (o.spread)
-      o.done.apply(o, results)
-    else
-      o.done(results)
+    if (o.spread) {
+			results.unshift(null); // no error
+      cb.apply(o, results);
+		} else {
+      cb(null, results);
+		}
 	}
 
   function make_callback() {
@@ -29,7 +27,7 @@ module.exports = function(o) {
         if (_err) return
         _err = err
         n = -1 // stop
-				o.error(err)
+				cb(err)
       } else {
         n++
         if (o.pluck)

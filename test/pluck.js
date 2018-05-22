@@ -8,18 +8,16 @@ require('interleavings').test(function (isAsync) {
       isAsync(function() { cb.apply(null, args) })()
   }
 
-  var mcb = multicb({
-		pluck: 1,
-		done: function(results) {
+  var mcb = multicb({pluck: 1},function(err, results) {
+		if(err) {
+			console.error(err);
+			t.fail("There should be no errors.");
+		} else {
 			console.log('done')
 			t.equal(results[0], 1)
 			t.equal(results[1], 2)
 			t.equal(results[2], 3)
 			isAsync.done()
-		},
-		error: function(err) {
-			console.error(err);
-			t.fail("There should be no errors.");
 		}
 	})
   async(mcb(), 5, [null, 1])

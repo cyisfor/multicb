@@ -10,15 +10,13 @@ require('interleavings').test(function (isAsync) {
 		}, delay)
   }
 
-  var mcb = multicb({
-		error: function(err) {
+  var mcb = multicb(function(err, results) {
+		if(err) {
 			t.equal(err, 'fail')
-			isAsync.done()
-		},
-		done: function(results) {
+		} else {
 			t.equal(results, void 0)
-			isAsync.done()
 		}
+		isAsync.done()
   })
   async(mcb(), 5, [null, 1])
   async(mcb(), 15, [null, 2])
