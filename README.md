@@ -7,11 +7,7 @@ var multicb = require('multicb')
 
 // default usage
 
-var done = multicb()
-doAsync(done())
-doAsync(done())
-doAsync(done())
-done(function(err, results) {
+var mcb = multicb(function(err, results) {
   console.log(err) // => undefined
   console.log(results) /* =>
   [
@@ -21,14 +17,15 @@ done(function(err, results) {
   ]
   */
 })
+doAsync(mcb())
+doAsync(mcb())
+doAsync(mcb())
+mcb.done()
+destroy mcb
 
 // pluck argument
 
-var done = multicb({ pluck: 1 })
-doAsync(done())
-doAsync(done())
-doAsync(done())
-done(function(err, results) {
+var mcb = multicb({ pluck: 1 }, function(err, results) {
   console.log(err) // => undefined
   console.log(results) /* =>
   [
@@ -38,17 +35,23 @@ done(function(err, results) {
   ]
   */
 })
+doAsync(mcb())
+doAsync(mcb())
+doAsync(mcb())
+mcb.done()
+delete mcb
 
 // spread argument
 
-var done = multicb({ pluck: 1, spread: true })
-doAsync(done())
-doAsync(done())
-doAsync(done())
-done(function(err, a, b, c) {
+var done = multicb({ pluck: 1, spread: true },function(err, a, b, c) {
   console.log(err) // => undefined
   console.log(a) // => 'foo'
   console.log(b) // => 'bar'
   console.log(c) // => 'baz'
 })
+doAsync(mcb())
+doAsync(mcb())
+doAsync(mcb())
+mcb.done()
+delete mcb
 ```
