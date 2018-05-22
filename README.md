@@ -7,51 +7,72 @@ var multicb = require('multicb')
 
 // default usage
 
-var mcb = multicb(function(err, results) {
-  console.log(err) // => undefined
-  console.log(results) /* =>
+var mcb = multicb({
+  done: function(results) {
+	console.log(results) /* =>
   [
-    [undefined, 'foo'],
-    [undefined, 'bar'],
-    [undefined, 'baz']
+    ['foo'],
+    ['bar'],
+    ['baz']
   ]
   */
+  }
 })
 doAsync(mcb())
 doAsync(mcb())
 doAsync(mcb())
-mcb.done()
-destroy mcb
+mcb.commit()
 
 // pluck argument
 
-var mcb = multicb({ pluck: 1 }, function(err, results) {
-  console.log(err) // => undefined
-  console.log(results) /* =>
-  [
-    'foo',
-    'bar',
-    'baz'
-  ]
-  */
+var mcb = multicb({ 
+  pluck: 1,
+  done: function(err, results) {
+    console.log(err) // => undefined
+    console.log(results) /* =>
+    [
+      'foo',
+      'bar',
+      'baz'
+    ]
+    */
+  }
 })
 doAsync(mcb())
 doAsync(mcb())
 doAsync(mcb())
-mcb.done()
+mcb.commit()
 delete mcb
 
 // spread argument
 
-var done = multicb({ pluck: 1, spread: true },function(err, a, b, c) {
-  console.log(err) // => undefined
-  console.log(a) // => 'foo'
-  console.log(b) // => 'bar'
-  console.log(c) // => 'baz'
+var mcb = multicb({ pluck: 1, spread: true,
+  done: function(a, b, c) {
+    console.log(a) // => 'foo'
+    console.log(b) // => 'bar'
+    console.log(c) // => 'baz'
+  }
 })
 doAsync(mcb())
 doAsync(mcb())
 doAsync(mcb())
-mcb.done()
-delete mcb
+mcb.commit()
+
+
+// error handling
+var mcb = multicb({ pluck: 1, spread: true,
+  done: function(a, b, c) {
+    console.log(a) // => 'foo'
+    console.log(b) // => 'bar'
+    console.log(c) // => 'baz'
+  },
+  error: function(err) {
+    console.error(err);
+	throw “other results may complete successfully, despite this error”;
+  }
+})
+doAsync(mcb())
+doAsync(mcb())
+doAsync(mcb())
+mcb.commit()
 ```

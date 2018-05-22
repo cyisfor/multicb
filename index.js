@@ -1,46 +1,38 @@
-module.exports = function(allopts) {
-  var n = 0, m = 0, _cb, results = [], _err;
-  function o (k, d) { return allopts && allopts[k] !== void 0 ? allopts[k] : d }
+module.exports = function(o) {
+  var n = 0, m = 0, results = [], _err;
+	var ready = false;
+	
+	function maybe_done() {
+		if(!ready) return;
+		if(n !== m) return;
+    if (o.spread)
+      o.done.apply(o, results)
+    else
+      o.done(results)
+	}
 
-  return function(cb) {
-    if (cb) {
-      results.length = m
-
-      if(_err) {
-        var err = _err; _err = null
-        return cb(err)
-      }
-      if(n == m) {
-        if (o('spread'))
-          return cb.apply(null, [null].concat(results))
-        else
-        return cb(null, results)
-      }
-
-      _cb = cb
-      return
-    }
-
+  function make_callback() {
+		if(ready) console.warn("Already committed. Possible race condition...");
     var i = m++
     return function (err) {
       if (err) {
         if (_err) return
         _err = err
         n = -1 // stop
-        if (_cb) _cb(err)
+				o.error(err)
       } else {
         n++
-        if (o('pluck'))
-          results[i] = arguments[o('pluck')]
+        if (o.pluck)
+          results[i] = arguments[o.pluck]
         else
           results[i] = Array.prototype.slice.call(arguments)
-        if (n === m && _cb) {
-          if (o('spread'))
-            _cb.apply(null, [null].concat(results))
-          else
-            _cb(null, results)
-        }
+				maybe_done()
       }
     }
   }
+	make_callback.commit = function commit() {
+		ready = true;
+		maybe_done();
+	}
+	return make_callback
 }
